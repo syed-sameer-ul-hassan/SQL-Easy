@@ -25,7 +25,7 @@ The execution layout below defines how user inputs are safely parsed, isolated, 
 
 ```mermaid
 graph TD
-    classDef default fill:transparent,stroke:currentColor,color:currentColor;
+    classDef default fill:transparent,stroke:currentColor,color:currentColor,rx:15px,ry:15px;
 
     A[User Input: target.com] --> B[Dependency Verification Module]
     B -->|All Tools Found| C[Phase 1: Subdomain Map Engine]
@@ -52,6 +52,7 @@ graph TD
 
     M --> N[Retrieve Database Architecture Names: --dbs]
     N --> O[Dynamic Workspace Cleanup Run]
+
 
 
 ```
