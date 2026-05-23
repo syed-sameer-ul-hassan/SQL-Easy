@@ -1,9 +1,9 @@
 
 <p align="center">
-<img src="assets/logo.svg" width="220" alt="SQLeasy Logo">
+<img src="assets/logo.svg" width="720" alt="SQLeasy Logo">
 </p>
 
-<h1 align="center">SQLeasy</h1>
+<h1 align="center">SQL Easy</h1>
 
 <p align="center">
   High-Volume SQL Injection Automation Funnel
@@ -13,9 +13,10 @@
 
 # SQLeasy: High-Volume SQL Injection Automation Funnel
 
-SQLeasy abstracts the structural complexities of managing mass web vulnerability reconnaissance infrastructure. It acts as an orchestrating pipeline wrapper that links passive subdomain mapping utilities with hyper-fast spidering engines and heavy automated database validation frameworks.
+SQL Easy abstracts the structural complexities of managing mass web vulnerability reconnaissance infrastructure. It acts as an orchestrating pipeline wrapper that links passive subdomain mapping utilities with hyper-fast spidering engines and heavy automated database validation frameworks. 
 
-By translating raw network output arrays into a real-time, interactive command-line target layout matrix
+By translating raw network output arrays into a real time interactive command line target layout matrix
+
 ---
 
 # 1. Core Architecture Diagram
@@ -24,6 +25,8 @@ The execution layout below defines how user inputs are safely parsed, isolated, 
 
 ```mermaid
 graph TD
+    classDef default fill:transparent,stroke:currentColor,color:currentColor;
+
     A[User Input: target.com] --> B[Dependency Verification Module]
     B -->|All Tools Found| C[Phase 1: Subdomain Map Engine]
     B -->|Tool Missing| X[Halt Execution & Log Error]
@@ -49,6 +52,8 @@ graph TD
 
     M --> N[Retrieve Database Architecture Names: --dbs]
     N --> O[Dynamic Workspace Cleanup Run]
+
+
 ```
 
 ---
