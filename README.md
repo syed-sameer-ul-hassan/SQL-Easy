@@ -1,3 +1,16 @@
+
+<p align="center">
+  <img src="assets/logo.svg" width="220" alt="SQLeasy Logo">
+</p>
+
+<h1 align="center">SQLeasy</h1>
+
+<p align="center">
+  High-Volume SQL Injection Automation Funnel
+</p>
+
+---
+
 # SQLeasy: High-Volume SQL Injection Automation Funnel
 
 SQLeasy abstracts the structural complexities of managing mass web vulnerability reconnaissance infrastructure. It acts as an orchestrating pipeline wrapper that links passive subdomain mapping utilities with hyper-fast spidering engines and heavy automated database validation frameworks.
