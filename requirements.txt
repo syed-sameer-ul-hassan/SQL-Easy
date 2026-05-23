@@ -1,0 +1,3 @@
+subfinder
+katana
+sqlmap
