@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="logo.svg" width="220" alt="SQLeasy Logo">
+<img src="assets/logo.svg" width="220" alt="SQLeasy Logo">
 </p>
 
 <h1 align="center">SQLeasy</h1>
