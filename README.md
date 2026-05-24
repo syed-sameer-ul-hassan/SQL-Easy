@@ -1,7 +1,7 @@
 # SQL Easy — Automated Penetration Testing Framework
 
 <p align="center">
-  <img src="assets/logo.svg" alt="SQL Easy Logo" width="200"/>
+  <img src="assets/logo.svg" alt="SQL Easy Logo" width="500"/>
 </p>
 
 <p align="center">
