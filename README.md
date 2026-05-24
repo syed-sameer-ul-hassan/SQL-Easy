@@ -1,8 +1,12 @@
-# SQL Easy — Automated Penetration Testing Framework
+
 
 <p align="center">
   <img src="assets/logo.svg" alt="SQL Easy Logo" width="500"/>
 </p>
+
+<h2 align="center">
+  SQL Easy — Automated Penetration Testing Framework
+</h2>
 
 <p align="center">
   <b>A high-performance automated reconnaissance and SQL injection exploitation orchestration pipeline.</b>
