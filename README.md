@@ -1,177 +1,434 @@
+# SQL Easy — Automated Penetration Testing Framework
 
 <p align="center">
-<img src="assets/logo.svg" width="720" alt="SQLeasy Logo">
+  <img src="assets/logo.svg" alt="SQL Easy Logo" width="200"/>
 </p>
 
-<h1 align="center">SQL Easy</h1>
+<p align="center">
+  <b>A high-performance automated reconnaissance and SQL injection exploitation orchestration pipeline.</b>
+</p>
 
 <p align="center">
-  High-Volume SQL Injection Automation Funnel
+  <a href="https://github.com/syed-sameer-ul-hassan/SQL-Easy/actions"><img src="https://img.shields.io/github/actions/workflow/status/syed-sameer-ul-hassan/SQL-Easy/ci.yml?branch=main&style=flat-square" alt="CI Status"/></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/syed-sameer-ul-hassan/SQL-Easy?style=flat-square" alt="License"/></a>
+  <a href="https://python.org"><img src="https://img.shields.io/badge/python-3.8%2B-blue?style=flat-square" alt="Python Version"/></a>
+  <a href="https://github.com/syed-sameer-ul-hassan/SQL-Easy/issues"><img src="https://img.shields.io/github/issues/syed-sameer-ul-hassan/SQL-Easy?style=flat-square" alt="Issues"/></a>
 </p>
 
 ---
 
-# SQLeasy: High-Volume SQL Injection Automation Funnel
+## Table of Contents
 
-SQL Easy abstracts the structural complexities of managing mass web vulnerability reconnaissance infrastructure. It acts as an orchestrating pipeline wrapper that links passive subdomain mapping utilities with hyper-fast spidering engines and heavy automated database validation frameworks. 
-
-By translating raw network output arrays into a real time interactive command line target layout matrix
+- [Full Pipeline Architecture](#full-pipeline-architecture)
+- [Module Breakdown](#module-breakdown)
+  - [Module A: Pre-Flight Check](#module-a-dependency-pre-flight-check-coreutilspy)
+  - [Module B: Reconnaissance Engine](#module-b-reconnaissance-engine-corereconpy)
+  - [Module C: Exploitation Engine](#module-c-exploitation-engine-corescannerpy)
+  - [Module D: Automated Logging](#module-d-automated-logging-coreloggingpy)
+- [Data Flow Diagram](#data-flow-diagram)
+- [Decision Logic Diagram](#decision-logic-diagram)
+- [Command Line Reference](#command-line-reference)
+- [Stealth & Evasion Modes](#stealth--evasion-modes)
+- [File Structure](#file-structure)
+- [Installation Deep Dive](#installation-deep-dive)
+- [Usage Examples](#usage-examples)
+- [Security & Ethics](#security--ethics)
+- [FAQ](#faq)
 
 ---
 
-# 1. Core Architecture Diagram
+## Full Pipeline Architecture
 
-The execution layout below defines how user inputs are safely parsed, isolated, filtered, and escalated throughout the runtime engine environment.
+This diagram shows the complete execution flow from start to finish. Every box maps directly to a real module or function inside the SQL Easy codebase.
 
 ```mermaid
-graph TD
-    classDef default fill:transparent,stroke:currentColor,color:currentColor,rx:15px,ry:15px;
+flowchart TD
+    A([👤 User Runs: sqleasy start]) --> B[core/config.py\nParse CLI Arguments]
+    B --> C[core/utils.py\nDependency Check]
 
-    A[User Input: target.com] --> B[Dependency Verification Module]
-    B -->|All Tools Found| C[Phase 1: Subdomain Map Engine]
-    B -->|Tool Missing| X[Halt Execution & Log Error]
+    C -->|subfinder ✓| C1[✓]
+    C -->|httpx ✓| C2[✓]
+    C -->|katana ✓| C3[✓]
+    C -->|sqlmap ✓| C4[✓]
+    C -->|Any Tool Missing ✗| HALT([🛑 HALT: Run sqleasy install])
 
-    C -->|subfinder execution| D[.subs.txt File Array]
-    D --> E[Phase 2: Crawler Engine]
+    C1 & C2 & C3 & C4 --> D[User Enters Domain Name]
 
-    E -->|katana spidering loop| F[Raw Output Streaming Buffer]
-    F -->|Regex Filtering Pattern: grep '='| G[.targets.txt Parameter Filter]
+    D --> E[core/recon.py\nSubfinder: Subdomain Enumeration]
+    E --> F[.subs.txt\nRaw Subdomain List]
+    F --> G[core/recon.py\nHttpx: Live Host Probing]
+    G --> H[.live_subs.txt\nConfirmed Live Hosts]
+    H --> I[core/recon.py\nKatana: URL Crawler & Spider]
+    I --> J[core/recon.py\nRegex Priority Sort Engine]
+    J --> K[.targets.txt\nSorted Parameter URL List]
 
-    G --> H{Are Target Vectors Discovered?}
+    K --> L{URLs Found?}
+    L -->|No| CLEAN([🧹 Cleanup & Exit])
+    L -->|Yes| M[core/display.py\nWifite-Style Target Menu]
 
-    H -->|No Endpoints Found| Y[Safe Termination & Local File Clean]
-    H -->|Endpoints Found| I[Menu Generation Engine]
+    M --> N{User Selection}
+    N -->|Single Number| O[core/scanner.py\nSingle Target SQLMap Run]
+    N -->|all| P[core/scanner.py\nMass SQLMap Run: -m flag]
 
-    I -->|Wifite-Style Menu Output| J[User Prompt Interaction Terminal]
+    O --> Q[SQLMap Injection Test]
+    P --> Q
 
-    J -->|Select Specific Vector Number| K[Exploitation Block: Direct Target SQLmap Run]
-    J -->|Select 'all' Command Parameter| L[Bulk Exploitation Loop: Multi-Target Run]
-
-    K --> M[Payload Evaluation Block]
-    L --> M[Payload Evaluation Block]
-
-    M --> N[Retrieve Database Architecture Names: --dbs]
-    N --> O[Dynamic Workspace Cleanup Run]
-
-
-
+    Q --> R[core/logging.py\nParse sqlmap Output Logs]
+    R --> S[logs/vulnerable_targets.csv\nSaved Results]
+    S --> T[core/utils.py\nCleanup Temp Files]
+    T --> U([✅ Done])
 ```
 
 ---
 
-# 2. Granular Step-by-Step Technical Breakdown
+## Module Breakdown
 
-## Module A: Dependency Pre-Flight Verification
+### Module A: Dependency Pre-Flight Check (`core/utils.py`)
 
-The system evaluates the host framework PATH variables using binary path verification tools. By testing the availability of three foundational applications (`subfinder`, `katana`, and `sqlmap`), the pipeline blocks broken script runs before wasting local computing or network resources.
+Before a single network packet is sent, SQL Easy checks that all four required external tools are active and present in the user's environment.
+
+```mermaid
+flowchart LR
+    A[utils.py\ncheck_dependencies] --> B{subfinder\nin PATH?}
+    B -->|Yes| C{httpx\nin PATH?}
+    B -->|No| FAIL([Halt + Error])
+    C -->|Yes| D{katana\nin PATH?}
+    C -->|No| FAIL
+    D -->|Yes| E{sqlmap\nin PATH?}
+    D -->|No| FAIL
+    E -->|Yes| OK([All Tools OK\nContinue])
+    E -->|No| FAIL
+```
+
+**Why this matters:** Without this pre-flight check, the pipeline could crash mid-run if an dependency is missing, leaving orphan temporary files containing sensitive scanned hosts.
+
+**Verification mechanism:**
+| Tool | Purpose | Verification Logic |
+|---|---|---|
+| `subfinder` | Passive Subdomain Enumeration | `shutil.which('subfinder')` |
+| `httpx` | Active Live Host Probing | `shutil.which('httpx')` |
+| `katana` | Active Crawling and Spidering | `shutil.which('katana')` |
+| `sqlmap` | Automated SQL Injection Testing | `shutil.which('sqlmap')` |
 
 ---
 
-## Module B: Passive Subdomain Enumeration
+### Module B: Reconnaissance Engine (`core/recon.py`)
 
-When a target domain profile is passed to the input handler, SQLeasy runs `subfinder`. This query framework taps into open-source internet directories (OSINT) to collect all alternative web records associated with the root parent boundary.
+This module is the core intelligence funnel. It orchestrates subfinder, httpx, and katana, feeding the raw results into a parameter extraction and sorting logic.
 
-The results are instantly stored inside an unformatted storage matrix file:
+#### Step 1: Subdomain Discovery (Subfinder)
 
-```bash
-.subs.txt
+```mermaid
+sequenceDiagram
+    participant User
+    participant recon.py
+    participant subfinder
+    participant File System
+
+    User->>recon.py: domain = "example.com"
+    recon.py->>subfinder: subfinder -d example.com -o .subs.txt
+    subfinder-->>File System: Write subdomains to .subs.txt
+    subfinder-->>recon.py: Return exit code
+    recon.py->>File System: Read .subs.txt
+    File System-->>recon.py: ["api.example.com", "shop.example.com", ...]
+```
+
+Subfinder passive discovery finds subdomains without directly communicating with the target hosts, relying on public cert transparency logs, search engines, and DNS records.
+
+#### Step 2: Live Port Discovery (Httpx)
+
+```mermaid
+sequenceDiagram
+    participant recon.py
+    participant httpx
+    participant Internet
+    participant File System
+
+    recon.py->>httpx: httpx -l .subs.txt -ports 80,443,8080,8443,8000
+    httpx->>Internet: Port-scan Subdomains
+    Internet-->>httpx: Return active ports
+    httpx-->>File System: Write live hosts to .live_subs.txt
+    httpx-->>recon.py: Return exit code
+```
+
+Httpx rapidly probes live servers across **5 major ports** (`80`, `443`, `8080`, `8443`, `8000`), filtering out unreachable subdomains before crawling.
+
+#### Step 3: Parameter Crawling & Sorting (Katana)
+
+```mermaid
+flowchart TD
+    A[.live_subs.txt\nLive Hosts] --> B[Katana Spider Engine]
+    B --> C[Raw URL Output Stream]
+    C --> D[Regex Filter Engine]
+    D --> E{Contains\nParameter?}
+    E -->|No: static assets/pages| F[Discard]
+    E -->|Yes: ?id=, ?page=| G[Priority Check]
+    G --> H{High-Value\nParam?}
+    H -->|Yes: id, file, page, search| I[Push to TOP\nof list]
+    H -->|No: lang, version| J[Append to\nbottom of list]
+    I & J --> K[.targets.txt\nFinal Sorted URL List]
+```
+
+**Sorting Logic:** Parameters referencing database fields (`?id=`, `?cat=`, `?page=`) are pushed to the top of `.targets.txt`, prioritizing maximum potential success during scan execution.
+
+---
+
+### Module C: Exploitation Engine (`core/scanner.py`)
+
+Takes candidate URLs from `.targets.txt` and hands them off to SQLMap for advanced payload injection testing.
+
+```mermaid
+flowchart TD
+    A[User selects target\nor types 'all'] --> B{Choice Type}
+    B -->|Number: e.g. 3| C[Single URL Mode]
+    B -->|'all'| D[Mass Mode: -m flag]
+    C & D --> E[Build Command Arguments]
+    E --> F{Proxy Set?}
+    F -->|Yes| G[Add --proxy=URL]
+    F -->|No| H[Skip proxy flag]
+    G & H --> I{Delay Set?}
+    I -->|Yes > 0| J[Add --delay=N]
+    I -->|No = 0| K[Skip delay flag]
+    J & K --> L[Final SQLMap Command]
+    L --> M[subprocess.run\nSecure List Array]
+    M --> N[SQLMap Active Test]
+    N --> O[core/logging.py\nExport Results]
+```
+
+**Always‑on Safety & Stealth Flags:**
+- `--batch`: Automated prompt suppression.
+- `--random-agent`: Dynamic User-Agent spoofing to avoid WAF signature blocks.
+- `--level=1` & `--risk=1`: Safe, conservative scanning profiles.
+- `--check-waf`: Active WAF protection detection.
+
+---
+
+### Module D: Automated Logging (`core/logging.py`)
+
+Walks SQLMap output files to identify confirmed vulnerabilities and structures them.
+
+```mermaid
+flowchart TD
+    A[SQLMap Finishes] --> B[logging.py\nexport_results]
+    B --> C[Scan SQLMap output dir\n~/.local/share/sqlmap/output/]
+    C --> D{Log files\nfound?}
+    D -->|No| E[Skip export]
+    D -->|Yes| F[Read each .log file]
+    F --> G{Contains\n'injectable'?}
+    G -->|No| H[Skip this file]
+    G -->|Yes| I[Extract Domain & Logs]
+    I --> J[Append row to\nlogs/vulnerable_targets.csv]
+    J --> K{More files?}
+    K -->|Yes| F
+    K -->|No| L([CSV Export Complete])
 ```
 
 ---
 
-## Module C: Parameter Extraction and Link Filtering
+## Data Flow Diagram
 
-Direct SQL injection attempts require active entry parameter fields such as query inputs, session variables, or page IDs.
-
-Passing raw domains into an exploitation engine directly creates massive network overhead. SQLeasy forces the collected subdomain array into `katana`, a specialized headless crawling tool.
-
-The output is dynamically piped into a string search filter:
-
-```bash
-grep '='
-```
-
-This isolates only hyperlinked addresses carrying active data variables, which are then routed into the target profile list:
-
-```bash
-.targets.txt
-```
-
----
-
-## Module D: Interactive Menu Generation Matrix
-
-The menu system reads the target file and strips duplicates to build a unique array index capped at 30 items for console readability.
-
-This index directly maps numeric menu identifiers to complex target URLs.
-
----
-
-## Module E: Automation Hand-Off Execution
-
-When the operator selects an attack sequence number, SQLeasy constructs the command-line call for the underlying scanner engine, injecting automated parameters optimized for controlled testing.
-
-### SQLmap Runtime Parameters
-
-#### `--batch`
-
-Suppresses interactive prompts by automatically selecting default answers for smoother automated execution.
-
-#### `--random-agent`
-
-Spoofs standard browser user-agents to reduce trivial firewall signature detection.
-
-#### `--level=1`
-
-Keeps payload depth lightweight to minimize excessive network traffic.
-
-#### `--risk=1`
-
-Limits aggressive payload behavior to reduce accidental service instability.
-
----
-
-# 3. Deployment and Local Environment Integration
-
-## System Dependencies
-
-Install the required utilities on Debian/Kali systems:
-
-```bash
-sudo apt update && sudo apt install subfinder katana sqlmap -y
+```mermaid
+flowchart LR
+    IN([User Input\ndomain name]) --> A[Subfinder]
+    A --> F1[.subs.txt]
+    F1 --> B[Httpx]
+    B --> F2[.live_subs.txt]
+    F2 --> C[Katana]
+    C --> F3[.targets.txt]
+    F3 --> D[SQLMap]
+    D --> F4[~/.local/share/sqlmap/output/]
+    F4 --> E[logging.py]
+    E --> F5[logs/vulnerable_targets.csv]
+    F3 & F1 & F2 --> CLEAN[Cleanup\nDelete temp files]
 ```
 
 ---
 
-## Global Binary Compilation
+## Decision Logic Diagram
 
-Compile SQL Easy into the system execution path:
-
-```bash
-chmod +x sql-easy
-sudo cp sqleasy /usr/local/bin/sqleasy
+```mermaid
+flowchart TD
+    START([Start Tool]) --> DEP{All 4 tools\ninstalled?}
+    DEP -->|No| INST[Run: sqleasy install]
+    DEP -->|Yes| DOM[Enter Domain]
+    DOM --> SUB[Run Subfinder]
+    SUB --> SUBR{Subdomains\nFound?}
+    SUBR -->|No| EXIT1([Exit: No attack surface])
+    SUBR -->|Yes| LIVE[Run Httpx]
+    LIVE --> LIVER{Live hosts\nFound?}
+    LIVER -->|No| EXIT2([Exit: All hosts offline])
+    LIVER -->|Yes| CRAWL[Run Katana]
+    CRAWL --> PARAM{Parameters\nFound?}
+    PARAM -->|No| EXIT3([Exit: No parameters found])
+    PARAM -->|Yes| MENU[Show Target Menu]
+    MENU --> SEL{User Selection}
+    SEL -->|Single| SINGLE[Run SQLMap\non one URL]
+    SEL -->|all| MASS[Run SQLMap\non all URLs]
+    SINGLE & MASS --> VULN{SQL Injection\nConfirmed?}
+    VULN -->|No| LOG1[Nothing to export]
+    VULN -->|Yes| LOG2[Export to CSV]
+    LOG1 & LOG2 --> DONE([Done])
 ```
 
 ---
 
-## Running the Tool
+## Command Line Reference
+
+The `sqleasy` wrapper supports a wide variety of command arguments:
 
 ```bash
-sqleasy
+sqleasy start [OPTIONS]
+```
+
+| Argument | Short | Default | Description |
+|---|---|---|---|
+| `--domain` | `-d` | Interactive prompt | Target domain to scan |
+| `--threads` | `-t` | `10` | Concurrency thread level |
+| `--proxy` | — | None | Proxy routing (Burp/Tor) |
+| `--delay` | — | `0` | Delay sleep between requests |
+
+### Argument Flow Diagram
+
+```mermaid
+flowchart TD
+    A[sqleasy start] --> B{-d provided?}
+    B -->|Yes| C[Use domain]
+    B -->|No| D[Prompt user]
+    C & D --> E{-t provided?}
+    E -->|Yes| F[Use thread count]
+    E -->|No| G[Default: 10 threads]
+    F & G --> H{--proxy provided?}
+    H -->|Yes| I[Configure HTTP/SOCKS Proxy]
+    H -->|No| J[Direct Connection]
+    I & J --> K{--delay provided?}
+    K -->|Yes| L[Throttled requests]
+    K -->|No| M[No delay]
+    L & M --> N[Begin Scan Pipeline]
 ```
 
 ---
 
-# 4. Recommended Project Structure
+## Stealth & Evasion Modes
 
+### Stealth Mode (Burp Suite Proxy + Throttling)
 ```bash
+sqleasy start -d target.com --proxy http://127.0.0.1:8080 --delay 3 -t 5
+```
+
+### Maximum Speed Bug Bounty Sweep
+```bash
+sqleasy start -d target.com -t 50
+```
+
+### Anonymized Tor Routing
+```bash
+sqleasy start -d target.com --proxy socks5://127.0.0.1:9050
+```
+
+---
+
+## File Structure
+
+```
 sql-easy/
-├── assets/
-│   └── logo.svg
-├── README.md
-├── LICENSE
-└── main.py
+│
+├── 📄 main.py                   ← Central orchestrator
+├── 📄 start.py                  ← Setup backend installer
+├── 📄 uninstall.py              ← Dependency cleaner
+├── 📄 install.sh                ← Global command symlink installer
+├── 📄 sqleasy                   ← Global Python launcher CLI entry point
+├── 📄 requirements.txt          ← Minimal python imports
+│
+├── 📁 core/                     ← Framework source
+│   ├── 📄 __init__.py           ← Package marker
+│   ├── 📄 config.py             ← CLI argparse configuration
+│   ├── 📄 display.py            ← Wifite‑style menu UI
+│   ├── 📄 logging.py            ← Log parser and CSV builder
+│   ├── 📄 recon.py              ← Subfinder → Httpx → Katana pipeline
+│   ├── 📄 scanner.py            ← SQLMap execution engine
+│   └── 📄 utils.py              ← Pre-flight check & cleanup
+│
+├── 📁 assets/
+│   └── 📄 logo.svg              ← Branding vector logo
+│
+├── 📁 logs/                     ← Scanned results directory (Gitignored)
+│
+├── 📁 .github/                  ← GitHub workflows & templates
+│   ├── 📄 PULL_REQUEST_TEMPLATE.md
+│   └── 📁 ISSUE_TEMPLATE/
+│       ├── 📄 bug_report.md
+│       └── 📄 feature_request.md
+│
+├── 📄 README.md                 ← Document root
+└── 📄 TODO.md                   ← Development Roadmap
 ```
 
 ---
 
+## Installation
+
+### 🐧 Linux (One-Line Install)
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/syed-sameer-ul-hassan/SQL-Easy/main/install.sh)"
+```
+
+### 🍎 macOS (One-Line Install)
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/syed-sameer-ul-hassan/SQL-Easy/main/install.sh)"
+```
+
+> Requires [Homebrew](https://brew.sh) for `git`. If not installed: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+
+### 🪟 Windows (PowerShell — Run as Administrator)
+
+```powershell
+irm https://raw.githubusercontent.com/syed-sameer-ul-hassan/SQL-Easy/main/install.ps1 | iex
+```
+
+### Debian / Ubuntu (APT Package)
+
+```bash
+sudo apt install ./sqleasy.deb
+```
+
+Build the `.deb` first by cloning the repo and running `./build_deb.sh`.
+
+---
+
+### After Install — Run From Anywhere
+
+```bash
+sqleasy start -d example.com
+```
+
+---
+
+## Security & Ethics
+
+> **⚠️ WARNING:** SQL Easy is intended **exclusively** for authorized vulnerability assessments, security research, and academic testing. **Under no circumstances should scans be executed against networks without prior explicit written permission.**
+
+### Safe Engineering Principles
+- **No Command Injection:** Subprocess calls avoid `shell=True` and pass lists directly to the OS shell API to prevent shell parameter tampering.
+- **Data Leak Safety:** Temporary artifacts are scrubbed from disk on process close, preventing data exposure.
+- **Gitignore Protection:** Logs and output directories are locally ignored, keeping target scopes clean from repository commits.
+
+---
+
+## FAQ
+
+**Q: The tool displays a warning: "Required tool subfinder not found".**
+*A: Run `sqleasy install` to install all dependencies. If you installed them manually, ensure their paths are fully exported to your system environment variable `$PATH`.*
+
+**Q: How do I update the tool and dependencies?**
+*A: Enter the installation path and run `sqleasy update`.*
+
+**Q: Can I run this tool on macOS?**
+*A: Yes! Make sure you install Python3 and have `sqlmap`, `subfinder`, `httpx`, and `katana` in your path via Homebrew.*
+
+---
+
+## License
+
+Distributed under the **Apache License 2.0**. See `LICENSE` for details.

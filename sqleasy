@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import subprocess
+
+R = "\033[31m"
+G = "\033[32m"
+Y = "\033[33m"
+C = "\033[36m"
+W = "\033[0m"
+
+CONFIG_FILE = os.path.expanduser("~/.config/sqleasy/path")
+
+def get_install_dir():
+    if os.path.isdir("/usr/share/sqleasy"):
+        return "/usr/share/sqleasy"
+    if os.path.isfile(CONFIG_FILE):
+        with open(CONFIG_FILE, "r") as f:
+            path = f.read().strip()
+        if os.path.isdir(path):
+            return path
+    print(f"{R}[-] SQL Easy installation path not found.{W}")
+    print(f"{Y}[*] Please re-run the installer from the project directory:{W}")
+    print(f"{C}    cd /path/to/SQL-Easy && sudo bash install.sh{W}\n")
+    sys.exit(1)
+
+def print_banner():
+    print(f"{C}")
+    print("███████  ██████  ██          ███████  █████  ███████ ██    ██ ")
+    print("██      ██    ██ ██          ██      ██   ██ ██       ██  ██  ")
+    print("███████ ██    ██ ██          █████   ███████ ███████   ████   ")
+    print("     ██ ██ ▄▄ ██ ██          ██      ██   ██      ██    ██    ")
+    print("███████  ██████  ███████     ███████ ██   ██ ███████    ██    ")
+    print("            ▀▀                                                ")
+    print(f"{Y}              [ SQL Easy Automation Framework v1.0.0 ]{W}\n")
+
+def print_help():
+    print_banner()
+    print(f"{C}USAGE:{W}")
+    print(f"  sqleasy <command> [options]\n")
+    print(f"{C}COMMANDS:{W}")
+    print(f"  {G}start{W}                  Launch SQL Easy interactively")
+    print(f"  {G}install{W}                Install all required backend tools")
+    print(f"  {G}uninstall{W}              Remove all installed backend tools")
+    print(f"  {G}update{W}                 Pull the latest version from GitHub")
+    print(f"  {G}help{W}  |  {G}-h{W}           Show this help menu\n")
+    print(f"{C}SCAN OPTIONS:{W}")
+    print(f"  {Y}-d, --domain <domain>{W}  Target domain to scan (e.g. example.com)")
+    print(f"  {Y}-t, --threads <n>{W}      Concurrency threads for recon (default: 10)")
+    print(f"  {Y}--proxy <url>{W}          Route traffic through proxy (http/socks5)")
+    print(f"  {Y}--delay <n>{W}            Seconds between requests (WAF evasion)\n")
+    print(f"{C}EXAMPLES:{W}")
+    print(f"  {W}sqleasy start")
+    print(f"  {W}sqleasy start -d example.com")
+    print(f"  {W}sqleasy start -d example.com -t 20")
+    print(f"  {W}sqleasy start -d example.com --proxy http://127.0.0.1:8080 --delay 3")
+    print(f"  {W}sqleasy start -d example.com --proxy socks5://127.0.0.1:9050")
+    print(f"  {W}sqleasy install")
+    print(f"  {W}sqleasy update")
+    print(f"  {W}sqleasy uninstall\n")
+    print(f"{C}DOCUMENTATION:{W}")
+    print(f"  {W}https://github.com/syed-sameer-ul-hassan/SQL-Easy\n")
+
+def run_in_dir(script, extra_args=None):
+    install_dir = get_install_dir()
+    cmd = [sys.executable, os.path.join(install_dir, script)]
+    if extra_args:
+        cmd += extra_args
+    try:
+        subprocess.run(cmd, cwd=install_dir)
+    except KeyboardInterrupt:
+        print(f"\n{R}[!] Interrupted.{W}")
+
+def cmd_start(extra_args):
+    os.system("clear")
+    run_in_dir("main.py", extra_args)
+
+def cmd_install():
+    os.system("clear")
+    run_in_dir("start.py")
+
+def cmd_uninstall():
+    os.system("clear")
+    run_in_dir("uninstall.py")
+
+def cmd_update():
+    install_dir = get_install_dir()
+    git_dir = os.path.join(install_dir, ".git")
+    if not os.path.exists(git_dir):
+        print(f"{Y}[*] SQL Easy is running as a package or system installation.{W}")
+        print(f"{C}[>] To upgrade, please run: sudo apt install --only-upgrade sqleasy or download the latest .deb file.{W}")
+        return
+    print(f"{C}[>] Pulling latest version from GitHub...{W}")
+    try:
+        subprocess.run(["git", "pull"], cwd=install_dir, check=True)
+        print(f"{G}[+] SQL Easy updated successfully!{W}")
+    except subprocess.CalledProcessError:
+        print(f"{R}[-] Update failed. Check your internet connection.{W}")
+    except FileNotFoundError:
+        print(f"{R}[-] Git not found. Install with: sudo apt install git{W}")
+
+def main():
+    args = sys.argv[1:]
+
+    if not args or args[0] in ("help", "-h", "--help"):
+        print_help()
+        return
+
+    command = args[0]
+    rest = args[1:]
+
+    if command == "start":
+        cmd_start(rest)
+    elif command == "install":
+        cmd_install()
+    elif command == "uninstall":
+        cmd_uninstall()
+    elif command == "update":
+        cmd_update()
+    else:
+        print(f"{R}[-] Unknown command: '{command}'{W}")
+        print(f"{Y}[*] Run 'sqleasy help' to see all available commands.{W}\n")
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+title: SQL Easy
+message: >-
+  If you use this software in your research, please cite it
+  using these metadata.
+type: software
+authors:
+  - given-names: Syed Sameer ul Hassan
+    email: syedsameerulhassan@example.com
+repository-code: 'https://github.com/syed-sameer-ul-hassan/SQL-Easy'
+abstract: >-
+  High-Volume SQL Injection Automation Funnel. An orchestrating 
+  pipeline wrapper that links passive subdomain mapping utilities 
+  with hyper-fast spidering engines and automated database 
+  validation frameworks.
+keywords:
+  - sql-injection
+  - bug-bounty
+  - pentesting
+  - automation
+  - sqlmap
+license: Apache-2.0
+version: 1.0.0
+date-released: '2026-05-24'

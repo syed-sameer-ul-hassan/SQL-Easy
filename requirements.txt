@@ -1,3 +1,2 @@
-subfinder
-katana
-sqlmap
+# SQL Easy runs entirely on the Python Standard Library.
+# No pip dependencies are required!
