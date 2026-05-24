@@ -371,33 +371,87 @@ sql-easy/
 
 ## Installation
 
-### 🐧 Linux (One-Line Install)
+### Prerequisites
+
+- Python 3.8 or higher
+- Git
+
+### Step 1: Clone the Repository
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/syed-sameer-ul-hassan/SQL-Easy/main/install.sh)"
+git clone https://github.com/syed-sameer-ul-hassan/SQL-Easy.git
+cd SQL-Easy
 ```
 
-### 🍎 macOS (One-Line Install)
+### Step 2: Install Required Tools
 
+**Linux (Debian/Ubuntu):**
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/syed-sameer-ul-hassan/SQL-Easy/main/install.sh)"
+# Install sqlmap
+sudo apt install -y sqlmap unzip wget
+
+# Download and install Subfinder
+wget -q https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_linux_amd64.zip -O /tmp/s.zip
+unzip -q -o /tmp/s.zip subfinder -d /tmp/
+sudo mv /tmp/subfinder /usr/local/bin/
+sudo chmod +x /usr/local/bin/subfinder
+
+# Download and install Httpx
+wget -q https://github.com/projectdiscovery/httpx/releases/download/v1.6.0/httpx_1.6.0_linux_amd64.zip -O /tmp/h.zip
+unzip -q -o /tmp/h.zip httpx -d /tmp/
+sudo mv /tmp/httpx /usr/local/bin/
+sudo chmod +x /usr/local/bin/httpx
+
+# Download and install Katana
+wget -q https://github.com/projectdiscovery/katana/releases/download/v1.1.0/katana_1.1.0_linux_amd64.zip -O /tmp/k.zip
+unzip -q -o /tmp/k.zip katana -d /tmp/
+sudo mv /tmp/katana /usr/local/bin/
+sudo chmod +x /usr/local/bin/katana
 ```
 
-> Requires [Homebrew](https://brew.sh) for `git`. If not installed: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+**macOS:**
+```bash
+# Install sqlmap
+brew install sqlmap
 
-### 🪟 Windows (PowerShell — Run as Administrator)
+# Download and install Subfinder
+wget -q https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_darwin_amd64.zip -O /tmp/s.zip
+unzip -q -o /tmp/s.zip subfinder -d /tmp/
+sudo mv /tmp/subfinder /usr/local/bin/
+sudo chmod +x /usr/local/bin/subfinder
 
+# Download and install Httpx
+wget -q https://github.com/projectdiscovery/httpx/releases/download/v1.6.0/httpx_1.6.0_darwin_amd64.zip -O /tmp/h.zip
+unzip -q -o /tmp/h.zip httpx -d /tmp/
+sudo mv /tmp/httpx /usr/local/bin/
+sudo chmod +x /usr/local/bin/httpx
+
+# Download and install Katana
+wget -q https://github.com/projectdiscovery/katana/releases/download/v1.1.0/katana_1.1.0_darwin_amd64.zip -O /tmp/k.zip
+unzip -q -o /tmp/k.zip katana -d /tmp/
+sudo mv /tmp/katana /usr/local/bin/
+sudo chmod +x /usr/local/bin/katana
+```
+
+**Windows:**
 ```powershell
-irm https://raw.githubusercontent.com/syed-sameer-ul-hassan/SQL-Easy/main/install.ps1 | iex
+# Download and extract tools manually from:
+# Subfinder: https://github.com/projectdiscovery/subfinder/releases
+# Httpx: https://github.com/projectdiscovery/httpx/releases
+# Katana: https://github.com/projectdiscovery/katana/releases
+# Sqlmap: https://github.com/sqlmapproject/sqlmap/releases
+
+# Add extracted executables to your system PATH
 ```
 
-### Debian / Ubuntu (APT Package)
+### Step 4: Run the Installer
 
 ```bash
-sudo apt install ./sqleasy.deb
+chmod +x install.sh
+./install.sh
 ```
 
-Build the `.deb` first by cloning the repo and running `./build_deb.sh`.
+This creates the `sqleasy` global command.
 
 ---
 
