@@ -70,6 +70,35 @@ mkdir -p "$HOME/.config/sqleasy"
 echo "$INSTALL_DIR" > "$HOME/.config/sqleasy/path"
 echo -e "${GREEN}[+] Saved install path to ~/.config/sqleasy/path${NC}"
 
+echo -e "${CYAN}[?] Do you want to download and install all required backend tools (SQLMap, Subfinder, Httpx, Katana)? [y/n]: ${NC}"
+read -r choice
+if [[ "$choice" =~ ^[Yy]$ ]]; then
+    echo -e "${YELLOW}[*] Installing SQLMap...${NC}"
+    sudo apt install -y sqlmap unzip wget
+    
+    echo -e "${YELLOW}[*] Downloading Subfinder...${NC}"
+    wget -q https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_linux_amd64.zip -O /tmp/s.zip
+    unzip -q -o /tmp/s.zip subfinder -d /tmp/
+    sudo mv /tmp/subfinder /usr/local/bin/
+    sudo chmod +x /usr/local/bin/subfinder
+    
+    echo -e "${YELLOW}[*] Downloading Httpx...${NC}"
+    wget -q https://github.com/projectdiscovery/httpx/releases/download/v1.6.0/httpx_1.6.0_linux_amd64.zip -O /tmp/h.zip
+    unzip -q -o /tmp/h.zip httpx -d /tmp/
+    sudo mv /tmp/httpx /usr/local/bin/
+    sudo chmod +x /usr/local/bin/httpx
+    
+    echo -e "${YELLOW}[*] Downloading Katana...${NC}"
+    wget -q https://github.com/projectdiscovery/katana/releases/download/v1.1.0/katana_1.1.0_linux_amd64.zip -O /tmp/k.zip
+    unzip -q -o /tmp/k.zip katana -d /tmp/
+    sudo mv /tmp/katana /usr/local/bin/
+    sudo chmod +x /usr/local/bin/katana
+    
+    echo -e "${GREEN}[+] All tools installed successfully!${NC}"
+else
+    echo -e "${YELLOW}[*] Skipping tool installation.${NC}"
+fi
+
 echo -e "${CYAN}[>] Installing global 'sqleasy' command to /usr/local/bin/...${NC}"
 sudo cp "$INSTALL_DIR/sqleasy" /usr/local/bin/sqleasy
 sudo chmod +x /usr/local/bin/sqleasy

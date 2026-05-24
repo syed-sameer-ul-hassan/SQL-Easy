@@ -7,13 +7,18 @@ $RED    = "`e[31m"
 $NC     = "`e[0m"
 
 Write-Host "${CYAN}"
-Write-Host "███████  ██████  ██          ███████  █████  ███████ ██    ██ "
-Write-Host "██      ██    ██ ██          ██      ██   ██ ██       ██  ██  "
-Write-Host "███████ ██    ██ ██          █████   ███████ ███████   ████   "
-Write-Host "     ██ ██ ▄▄ ██ ██          ██      ██   ██      ██    ██    "
-Write-Host "███████  ██████  ███████     ███████ ██   ██ ███████    ██    "
-Write-Host "            ▀▀                                                "
-Write-Host "${YELLOW}              [ SQL Easy Installer — Windows ]${NC}"
+Write-Host " 
+  ██████   █████   ██▓       ▓█████ ▄▄▄        ██████ ▓██   ██▓
+▒██    ▒ ▒██▓  ██▒▓██▒       ▓█   ▀▒████▄    ▒██    ▒  ▒██  ██▒
+░ ▓██▄   ▒██▒  ██░▒██░       ▒███  ▒██  ▀█▄  ░ ▓██▄     ▒██ ██░
+  ▒   ██▒░██  █▀ ░▒██░       ▒▓█  ▄░██▄▄▄▄██   ▒   ██▒  ░▐██▓░
+▒██████▒▒░▒███▒█▄ ░██████▒   ░▒████▒▓█   ▓██▒▒██████▒▒  ░██▒▓░
+▒ ▒▓▒ ▒ ░░░ ▒▒░ ▒ ░ ▒░▓  ░   ░░ ▒░ ░▒▒   ▓▒█░▒ ▒▓▒ ▒ ░   ██▒▒▒ 
+░ ░▒  ░ ░ ░ ▒░  ░ ░ ░ ▒  ░    ░ ░  ░ ▒   ▒▒ ░░ ░▒  ░ ░ ▓██░▒░ 
+░  ░  ░     ░   ░   ░ ░         ░    ░   ▒   ░  ░  ░  ▒  ▒ ░░  
+      ░      ░        ░  ░      ░  ░     ░  ░      ░  ░  ░     
+                                                      ░  ░      "
+Write-Host "${YELLOW}                  [ SQL Easy Installer ]${NC}"
 Write-Host ""
 
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
@@ -41,6 +46,39 @@ $CONFIG_DIR = "$env:USERPROFILE\.config\sqleasy"
 New-Item -ItemType Directory -Force -Path $CONFIG_DIR | Out-Null
 Set-Content -Path "$CONFIG_DIR\path" -Value $INSTALL_DIR
 Write-Host "${GREEN}[+] Saved install path to ~/.config/sqleasy/path${NC}"
+
+$choice = Read-Host "${CYAN}[?] Do you want to download and install all required backend tools (SQLMap, Subfinder, Httpx, Katana)? [y/n]${NC}"
+if ($choice -eq 'y' -or $choice -eq 'Y') {
+    Write-Host "${YELLOW}[*] Downloading SQLMap...${NC}"
+    Invoke-WebRequest -Uri "https://github.com/sqlmapproject/sqlmap/archive/refs/tags/1.7.8.zip" -OutFile "$env:TEMP\sqlmap.zip"
+    Expand-Archive -Path "$env:TEMP\sqlmap.zip" -DestinationPath "$env:USERPROFILE\sqlmap" -Force
+    Move-Item -Path "$env:USERPROFILE\sqlmap\sqlmap-1.7.8\*" -Destination "$env:USERPROFILE\sqlmap" -Force
+    Remove-Item -Path "$env:USERPROFILE\sqlmap\sqlmap-1.7.8" -Force
+    $env:PATH += ";$env:USERPROFILE\sqlmap"
+    [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "User")
+    
+    Write-Host "${YELLOW}[*] Downloading Subfinder...${NC}"
+    Invoke-WebRequest -Uri "https://github.com/projectdiscovery/subfinder/releases/download/v2.6.6/subfinder_2.6.6_windows_amd64.zip" -OutFile "$env:TEMP\subfinder.zip"
+    Expand-Archive -Path "$env:TEMP\subfinder.zip" -DestinationPath "$env:USERPROFILE\tools" -Force
+    $env:PATH += ";$env:USERPROFILE\tools"
+    [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "User")
+    
+    Write-Host "${YELLOW}[*] Downloading Httpx...${NC}"
+    Invoke-WebRequest -Uri "https://github.com/projectdiscovery/httpx/releases/download/v1.6.0/httpx_1.6.0_windows_amd64.zip" -OutFile "$env:TEMP\httpx.zip"
+    Expand-Archive -Path "$env:TEMP\httpx.zip" -DestinationPath "$env:USERPROFILE\tools" -Force
+    $env:PATH += ";$env:USERPROFILE\tools"
+    [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "User")
+    
+    Write-Host "${YELLOW}[*] Downloading Katana...${NC}"
+    Invoke-WebRequest -Uri "https://github.com/projectdiscovery/katana/releases/download/v1.1.0/katana_1.1.0_windows_amd64.zip" -OutFile "$env:TEMP\katana.zip"
+    Expand-Archive -Path "$env:TEMP\katana.zip" -DestinationPath "$env:USERPROFILE\tools" -Force
+    $env:PATH += ";$env:USERPROFILE\tools"
+    [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "User")
+    
+    Write-Host "${GREEN}[+] All tools installed successfully!${NC}"
+} else {
+    Write-Host "${YELLOW}[*] Skipping tool installation.${NC}"
+}
 
 $SCRIPTS_DIR = "$env:USERPROFILE\AppData\Local\Microsoft\WindowsApps"
 $WRAPPER = "$SCRIPTS_DIR\sqleasy.cmd"
