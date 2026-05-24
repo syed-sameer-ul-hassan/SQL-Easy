@@ -443,9 +443,7 @@ sudo chmod +x /usr/local/bin/katana
 
 # Add extracted executables to your system PATH
 ```
-### Website
-# Visite Website for easy installing methods
-Website[https://sqleasy.orildo.sbs] 
+
 
 ### Step 4: Run the Installer
 
@@ -463,7 +461,10 @@ This creates the `sqleasy` global command.
 ```bash
 sqleasy start -d example.com
 ```
-
+---
+## Website
+### Visite Website for easy installing methods
+[Website](https://sqleasy.orildo.sbs) 
 ---
 
 ## Security & Ethics
