@@ -464,7 +464,9 @@ sqleasy start -d example.com
 ---
 ## Website
 ### Visite Website for easy installing methods
+
 [Website](https://sqleasy.orildo.sbs) 
+
 ---
 
 ## Security & Ethics
@@ -493,4 +495,4 @@ sqleasy start -d example.com
 
 ## License
 
-Distributed under the **Apache License 2.0**. See `LICENSE` for details.
+Distributed under the **Apache License 2.0**. See [LICENSE](./LICENSE) for details.
