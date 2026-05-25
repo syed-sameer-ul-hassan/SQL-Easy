@@ -64,9 +64,6 @@ function Get-Zip {
     Remove-Job $job
 }
 
-# ----------------------------------------------------------------
-#  Banner
-# ----------------------------------------------------------------
 Write-Host "${C}"
 Write-Host "  ██████   █████   ██▓       ▓█████ ▄▄▄        ██████ ▓██   ██▓"
 Write-Host "▒██    ▒ ▒██▓  ██▒▓██▒       ▓█   ▀▒████▄    ▒██    ▒  ▒██  ██▒"
@@ -82,9 +79,6 @@ Write-Host "  ${B}${Y}SQL Easy  Installer${W}   ${D}v1.1.0  |  sqleasy.orildo.sb
 Write-Host $HR
 Write-Host ""
 
-# ----------------------------------------------------------------
-#  Environment
-# ----------------------------------------------------------------
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
     Dot-Line "Python" "NOT FOUND  ->  python.org" $R
     exit 1
@@ -100,9 +94,6 @@ Dot-Line "Git" ((git --version) -replace "git version ","")  $G
 Write-Host ""
 Write-Host $HR
 
-# ----------------------------------------------------------------
-#  Repository
-# ----------------------------------------------------------------
 Section "Repository"
 $INSTALL_DIR = "$env:USERPROFILE\sql-easy"
 if (Test-Path "$INSTALL_DIR\.git") {
@@ -122,9 +113,6 @@ Dot-Line "Config saved"  "~\.config\sqleasy\path"  $G
 Write-Host ""
 Write-Host $HR
 
-# ----------------------------------------------------------------
-#  Tools
-# ----------------------------------------------------------------
 Section "Backend Tools"
 Write-Host "  ${C}Install SQLMap / Subfinder / Httpx / Katana?${W}"
 Write-Host "  ${D}(Nuclei and Arjun require Go / pip)${W}"
@@ -166,9 +154,6 @@ if ($choice -eq 'y' -or $choice -eq 'Y') {
 Write-Host ""
 Write-Host $HR
 
-# ----------------------------------------------------------------
-#  Register command
-# ----------------------------------------------------------------
 Section "Global Command"
 $WRAPPER = "$env:USERPROFILE\AppData\Local\Microsoft\WindowsApps\sqleasy.cmd"
 Set-Content -Path $WRAPPER -Value "@python `"$INSTALL_DIR\sqleasy`" %*"
@@ -176,9 +161,6 @@ Dot-Line "sqleasy.cmd" $WRAPPER $G
 Write-Host ""
 Write-Host $HR
 
-# ----------------------------------------------------------------
-#  Verification
-# ----------------------------------------------------------------
 Section "Verification"
 $missing = 0
 foreach ($tool in @("python", "git", "sqlmap")) {

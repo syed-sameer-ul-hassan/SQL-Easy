@@ -83,9 +83,6 @@ printf "  ${B}${Y}SQL Easy  Installer${W}   ${D}v1.1.0  |  sqleasy.orildo.sbs${W
 echo -e "$HR"
 echo ""
 
-# ----------------------------------------------------------------
-#  Environment check
-# ----------------------------------------------------------------
 OS="$(uname -s)"
 case "$OS" in
     Linux*)  PLATFORM="linux" ;;
@@ -120,9 +117,6 @@ dot_line "Git"  "$(git --version | cut -d' ' -f3)"  "$G"
 echo ""
 echo -e "$HR"
 
-# ----------------------------------------------------------------
-#  Repository
-# ----------------------------------------------------------------
 section "Repository"
 INSTALL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)"
 if [ ! -f "$INSTALL_DIR/main.py" ]; then
@@ -142,9 +136,6 @@ dot_line "Config saved"   "~/.config/sqleasy/path"     "$G"
 echo ""
 echo -e "$HR"
 
-# ----------------------------------------------------------------
-#  Tool installation
-# ----------------------------------------------------------------
 section "Backend Tools"
 printf "  ${C}Install SQLMap / Subfinder / Httpx / Katana + optional tools?${W}\n"
 printf "  ${D}(Nuclei and Arjun require Go / pip3)${W}\n\n"
@@ -179,17 +170,11 @@ fi
 echo ""
 echo -e "$HR"
 
-# ----------------------------------------------------------------
-#  Register command
-# ----------------------------------------------------------------
 section "Global Command"
 run_bg "sqleasy -> /usr/local/bin" bash -c "sudo cp '$INSTALL_DIR/sqleasy' /usr/local/bin/sqleasy && sudo chmod +x /usr/local/bin/sqleasy"
 echo ""
 echo -e "$HR"
 
-# ----------------------------------------------------------------
-#  Verification
-# ----------------------------------------------------------------
 section "Verification"
 MISSING=0
 for tool in subfinder httpx katana sqlmap sqleasy; do
