@@ -5,31 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2026-05-24
+## [1.1.0] - 2026-05-25
 
 ### Added
+- **New CLI commands**: `sqleasy logs`, `sqleasy report`, `sqleasy clear`, `sqleasy version`.
+- **Nuclei integration**: Runs broad vuln scan (medium/high/critical) on live hosts after SQLMap.
+- **Arjun integration**: Hidden HTTP parameter bruteforce on confirmed live hosts.
+- **GAU / Waybackurls integration**: Historical URL harvesting as fallback recon source.
+- **`--tables` flag**: SQLMap enumerates database tables in addition to `--dbs`.
+- **`--dump` flag**: SQLMap dumps full table contents.
+- **`--level` / `--risk` flags**: Configurable SQLMap test depth (default: level=3, risk=2).
+- **`--tamper=space2comment`**: Basic WAF evasion on all scans.
+- **`--forms`**: SQLMap also tests HTML forms on each target.
+- **JSON export**: All results saved to `logs/vulnerable_targets.json` alongside CSV.
+- **Scan duration timer**: Total time printed at end of every scan pipeline.
+- **Domain validation**: Regex check on domain input before any recon begins.
+- **Log manager**: Previous scan results shown before each new scan with view/delete options.
+- **Smart URL filtering**: Static assets (.css, .js, .svg, .woff, etc.) and cache-buster-only params excluded from target list.
+- **Installer**: `sqleasy install` now also installs Nuclei, GAU, and Arjun.
 - **Cross-Platform Installer Support**: Added `install.ps1` for Windows (PowerShell one-liner via `irm | iex`).
 - **macOS Support**: `install.sh` now auto-detects macOS via `uname` and uses Homebrew for dependencies instead of `apt`.
-- **Debian APT Package**: Added `build_deb.sh` to package SQL Easy as a native `.deb` file installable via `sudo apt install ./sqleasy.deb`.
-- **Auto-Clone on Curl Install**: `install.sh` now detects when run via a one-liner (outside the repo directory) and automatically clones the repository first.
-- **THANK YOU Banner**: Added custom ASCII art banner to `uninstall.py` on exit.
-- **Uninstall now removes `sqleasy` binary and `~/.config/sqleasy`**: Full system cleanup on uninstall including the global command and config directory.
-- **Dual-Mode Path Resolution in launcher**: `sqleasy` now checks `/usr/share/sqleasy` (APT install path) before falling back to `~/.config/sqleasy/path` (manual install path).
-- **`sqleasy update` smart detection**: Detects whether running from a git clone or APT package and provides the correct upgrade instructions.
+- **Debian APT Package**: Added `build_deb.sh` to package SQL Easy as a native `.deb` file.
 
 ### Changed
-- All subprocess calls in `core/recon.py` and `core/scanner.py` migrated from `shlex.split` string parsing to secure native list arrays — eliminating all command injection surface.
-- `start.py` now resolves `main.py` via absolute path (prevents failures when invoked from a different working directory).
-- All `#` comments removed from every shell script and Python file — source is 100% comment-free.
-- Updated `CLI_REFERENCE.md` with full cross-platform installation table and Windows-specific command routing documentation.
-- Updated `README.md` installation section with one-liner commands for all four platforms.
-- Updated ASCII logo banner across `sqleasy`, `start.py`, and `install.ps1` to the new high-resolution block font style.
+- SQLMap default flags upgraded: `--batch`, `--random-agent`, `--threads=5`, `--timeout=10`, `--retries=2`.
+- High-priority parameter pattern expanded to 20+ params (`id, uid, user, action, cmd, exec, redirect`...).
+- Target cap raised from 30 to 50 URLs.
+- Live output streaming for subfinder and httpx (real-time results instead of silent execution).
+- Katana shows inline crawl counter (`Crawled: N URLs | Parameters found: N`).
+- Removed obsolete `--check-waf` SQLMap flag (deprecated in SQLMap >= 1.7).
+- Removed unused `import shlex` from `core/recon.py` and `core/scanner.py`.
 
 ### Fixed
-- Fixed `install.sh` ASCII banner causing bash syntax errors (raw multi-byte characters outside a `cat << 'EOF'` block).
-- Fixed `install.ps1` banner using bash `cat << 'EOF'` heredoc syntax (invalid in PowerShell) — replaced with native `Write-Host` calls.
-- Fixed Katana output URL parsing: was splitting on literal `\n` string instead of actual newline character — caused empty target lists.
-- Fixed `requirements.txt` incorrectly listing binary tools as pip packages — SQL Easy has zero pip dependencies.
+- CSS/JS asset URLs (e.g. `style.css?v=...`) no longer passed to SQLMap as injection targets.
+- Subfinder no longer writes to file via `-o` flag; output captured via stdout for live display.
+- Httpx no longer writes to file via `-o` flag; output captured via stdout for live display.
+- Silent subprocess failures now surface as visible error messages.
 
 ---
 

@@ -13,7 +13,9 @@ Currently, only the latest release of SQL Easy is actively supported with securi
 
 We take the security of SQL Easy very seriously. If you discover a vulnerability within the tool (e.g., shell injection vectors in the core scanner, insecure file permissions during cleanup, etc.), please do not disclose it publicly.
 
-Instead, please report it via the GitHub Security Advisory feature or email the maintainers directly.
+**Primary bug reporting portal: [bug.orildo.sbs](https://bug.orildo.sbs)**
+
+You can also report it via the GitHub Security Advisory feature or email the maintainers directly.
 
 1. Provide a detailed summary of the vulnerability.
 2. Include explicit steps to reproduce the issue locally.

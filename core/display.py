@@ -26,10 +26,16 @@ def display_targets():
         print(f"\n{R}[-] Error reading targets file: {e}{W}")
         sys.exit(1)
 
-    print(f"\n{Y} NUM   AVAILABLE PARAMETER TARGETS (WIFITE-STYLE MENU){W}")
-    print(f"{C} ---   ------------------------------------------------{W}")
-    
+    count = len(urls)
+    print(f"\n{Y}  +------------------------------------------------------------+{W}")
+    print(f"{Y}  |  AVAILABLE PARAMETER TARGETS  ({count} found){' '*(26-len(str(count)))}|{W}")
+    print(f"{Y}  +------------------------------------------------------------+{W}")
+    print(f"\n{C}  {'No.':<5}  Target URL{W}")
+    print(f"{C}  {'---':<5}  {'-'*55}{W}")
+
     for idx, url in enumerate(urls, 1):
-        print(f" {G}{idx:<5}{W}{url}")
-    
+        display_url = url if len(url) <= 70 else url[:67] + '...'
+        print(f"  {G}{idx:<5}{W}  {display_url}")
+
+    print(f"{C}  {'---':<5}  {'-'*55}{W}\n")
     return urls

@@ -85,66 +85,80 @@ Before making any changes, it is critical to understand which module does what. 
 flowchart TD
     A[main.py\nOrchestrator] --> B[core/config.py\nCLI Flags]
     A --> C[core/utils.py\nDependency Check & Cleanup]
-    A --> D[core/recon.py\nSubfinder + Httpx + Katana]
-    A --> E[core/display.py\nBanner + Menu]
-    A --> F[core/scanner.py\nSQLMap Executor]
-    F --> G[core/logging.py\nCSV Exporter]
+    A --> D[core/recon.py\nSubfinder + Httpx + arjun\ngau + Katana + URL Filter]
+    A --> E[core/display.py\nBanner + Target Menu]
+    A --> F[core/scanner.py\nSQLMap + Nuclei Executor]
+    F --> G[core/logging.py\nCSV + JSON Exporter]
 ```
 
 ---
 
 ## Module Architecture
 
-### `main.py` — The Orchestrator
+### `main.py` - The Orchestrator
 
 This file is the entry point. It imports all `core/` modules and calls them in sequence. It also wraps the entire execution in a global `try...except KeyboardInterrupt` block to ensure safe cleanup when the user presses `Ctrl+C`.
 
 **Rule:** Do not add business logic here. Only orchestration calls.
 
-### `core/config.py` — CLI Arguments
+### `core/config.py` - CLI Arguments
 
 Contains all `argparse` definitions.
 
-**When to edit:** If you want to add a new command-line flag (e.g., `--output`, `--timeout`).
+**When to edit:** If you want to add a new command-line flag.
 
 ```python
 parser.add_argument('-d', '--domain', help='Target domain')
 parser.add_argument('-t', '--threads', default=10, type=int)
 parser.add_argument('--proxy', help='Proxy URL')
 parser.add_argument('--delay', default=0, type=int)
+parser.add_argument('--level', default=3, type=int)
+parser.add_argument('--risk', default=2, type=int)
+parser.add_argument('--tables', action='store_true')
+parser.add_argument('--dump', action='store_true')
+parser.add_argument('--logs', action='store_true')
+parser.add_argument('--report', action='store_true')
+parser.add_argument('--clear', action='store_true')
 ```
 
-### `core/utils.py` — Utilities
+### `core/utils.py` - Utilities
 
 Contains two functions:
-- `check_dependencies()` — Verifies all 4 tools are in PATH
-- `cleanup()` — Deletes `.subs.txt`, `.live_subs.txt`, `.targets.txt`
+- `check_dependencies()` - Verifies the 4 required tools are in PATH (subfinder, httpx, katana, sqlmap). Optional tools (nuclei, arjun, gau) are checked silently at runtime and skipped if absent.
+- `cleanup()` - Deletes `.subs.txt`, `.live_subs.txt`, `.targets.txt`
 
 **When to edit:** If you add a new required tool to the pipeline.
 
-### `core/recon.py` — Reconnaissance Engine
+### `core/recon.py` - Reconnaissance Engine
 
-The most complex module. Runs the Subfinder → Httpx → Katana pipeline and applies the Regex priority sort.
+The most complex module. Full v1.1.0 pipeline:
+1. **Subfinder** - passive subdomain enumeration (live stdout streaming)
+2. **Httpx** - live host probing across 5 ports (live stdout streaming)
+3. **Arjun** (optional) - hidden parameter bruteforce on up to 5 live hosts
+4. **GAU / Waybackurls** (optional) - historical URL harvest
+5. **Katana** - active URL crawling with inline counter
+6. **URL Filter** - strips static assets and cache-buster-only params
+7. **Priority Sort** - 20+ high-value params pushed to top, cap of 50 URLs
 
-**When to edit:** If you want to change how subdomains are discovered, how live hosts are probed, or how URLs are filtered and sorted.
+**When to edit:** Subdomain discovery, live host probing, URL filtering, sorting logic, or adding new recon tools.
 
-### `core/scanner.py` — SQLMap Executor
+### `core/scanner.py` - SQLMap Executor
 
-Builds the SQLMap command from user input and the `args` config object, then executes it.
+Builds the SQLMap command from user input and the `args` config object, then executes it. v1.1.0 always applies: `--batch --random-agent --forms --threads=5 --tamper=space2comment --timeout=10 --retries=2` plus configurable `--level` and `--risk`. After SQLMap, if `nuclei` is installed it runs a broad vuln scan on all live hosts.
 
-**When to edit:** If you want to add new SQLMap flags, change default scan parameters, or add a new scanner tool alongside SQLMap.
+**When to edit:** SQLMap flags, default scan depth, action flags (--tables/--dump), or nuclei integration.
 
-### `core/display.py` — UI Engine
+### `core/display.py` - UI Engine
 
 Renders the ASCII banner and the Wifite-style numbered target menu.
 
 **When to edit:** If you want to change the visual layout or menu format.
 
-### `core/logging.py` — CSV Exporter
+### `core/logging.py` - CSV + JSON Exporter
 
-Parses SQLMap output directory logs and writes confirmed vulnerabilities to a CSV file.
+Parses SQLMap output directory logs and writes confirmed vulnerabilities to both CSV and JSON. Also provides `show_log_manager()`, `show_report()`, and `clear_logs()` which are invoked by `sqleasy logs`, `sqleasy report`, and `sqleasy clear`.
 
-**When to edit:** If you want to add more fields to the CSV or support a different output format (e.g., JSON).
+**When to edit:** Add more export fields, change output format, or extend the log manager UI.
 
 ---
 
@@ -228,7 +242,7 @@ flowchart TD
 ### PR Checklist
 
 Before submitting, confirm:
-- [ ] Code uses secure list arguments for subprocess calls — no `shell=True` and no `shlex.split` string parsing
+- [ ] Code uses secure list arguments for subprocess calls - no `shell=True` and no `shlex.split` string parsing
 - [ ] All file I/O wrapped in `try...except`
 - [ ] No comments left in code files
 - [ ] No unused imports
@@ -301,3 +315,5 @@ If all modules run without Python errors (even if no vulnerabilities are found),
 ## Questions?
 
 Open a GitHub Discussion or file an Issue using the appropriate template. We respond to all contributions promptly.
+
+To report a bug directly, use the bug reporting portal: [bug.orildo.sbs](https://bug.orildo.sbs)

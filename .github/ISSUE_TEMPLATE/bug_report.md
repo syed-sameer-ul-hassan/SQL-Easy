@@ -1,5 +1,5 @@
 ---
-name: 🐛 Bug Report
+name: Bug Report
 about: Create a detailed bug report to help us improve SQL Easy
 title: "[BUG] "
 labels: bug
@@ -7,7 +7,12 @@ assignees: ''
 
 ---
 
-## 📝 Bug Description
+> **Report bugs online:** [bug.orildo.sbs](https://bug.orildo.sbs)
+> You can also submit this form directly via GitHub Issues below.
+
+---
+
+## Bug Description
 A clear and concise description of what the bug is. Please include any background context.
 
 *Example:*
@@ -15,7 +20,7 @@ A clear and concise description of what the bug is. Please include any backgroun
 
 ---
 
-## 🕹️ Steps To Reproduce
+## Steps To Reproduce
 Steps to reproduce the behavior:
 1. Run `sqleasy start -d empty-subdomains-site.com`
 2. Let Subfinder complete subdomain enumeration.
@@ -23,7 +28,7 @@ Steps to reproduce the behavior:
 
 ---
 
-## 🎯 Expected Behavior
+## Expected Behavior
 A clear description of what you expected to happen.
 
 *Example:*
@@ -31,7 +36,7 @@ A clear description of what you expected to happen.
 
 ---
 
-## 💻 Execution Environment
+## Execution Environment
 - **OS:** Ubuntu 22.04 LTS / Kali Linux 2024.1
 - **Python Version:** 3.10.12
 - **SQL Easy Command Used:** `sqleasy start -d example.com -t 20`
@@ -43,7 +48,7 @@ A clear description of what you expected to happen.
 
 ---
 
-## 📊 Error Logs & Screenshots
+## Error Logs & Screenshots
 If applicable, add terminal logs or screenshot/recording links to help explain the problem.
 
 ```text

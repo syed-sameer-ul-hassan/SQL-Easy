@@ -1,5 +1,5 @@
 ---
-name: 🚀 Feature Request
+name: Feature Request
 about: Suggest a new idea, integration, or improvement for SQL Easy
 title: "[FEATURE] "
 labels: enhancement
@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-## 💡 Is your feature request related to a problem?
+## Is your feature request related to a problem?
 A clear and concise description of what the limitation is. 
 
 *Example:*
@@ -15,7 +15,7 @@ A clear and concise description of what the limitation is.
 
 ---
 
-## 🎯 Describe the solution you'd like
+## Describe the solution you'd like
 A clear and concise description of what you want to happen. If you are suggesting a code change, please specify which files or modules (`core/recon.py`, `core/scanner.py`, etc.) are affected.
 
 *Example:*
@@ -23,7 +23,7 @@ A clear and concise description of what you want to happen. If you are suggestin
 
 ---
 
-## 🔄 Describe alternatives you've considered
+## Describe alternatives you've considered
 A clear and concise description of any alternative solutions, scripts, or existing tools you've considered.
 
 *Example:*
@@ -31,5 +31,5 @@ A clear and concise description of any alternative solutions, scripts, or existi
 
 ---
 
-## 🎨 Additional Context
+## Additional Context
 Add any other context, mockup screenshots, terminal output concepts, or structural diagrams about the feature request here.

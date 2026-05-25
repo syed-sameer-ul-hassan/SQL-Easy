@@ -9,7 +9,7 @@ mkdir -p "$DIR/usr/share/sqleasy/core"
 
 cat << 'EOF' > "$DIR/DEBIAN/control"
 Package: sqleasy
-Version: 1.0.0
+Version: 1.1.0
 Section: utils
 Priority: optional
 Architecture: all
