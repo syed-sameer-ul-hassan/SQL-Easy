@@ -1,0 +1,60 @@
+# ── Python cache ──────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual environments ───────────────────────────────────
+.env
+.venv/
+env/
+venv/
+pyvenv.cfg
+
+# ── SQL Easy temp/runtime files ───────────────────────────
+.subs.txt
+.live_subs.txt
+.targets.txt
+
+# ── Scan output / logs ────────────────────────────────────
+logs/
+*.csv
+*.json
+*.log
+*.tmp
+*.bak
+report.html
+
+# ── User config (not the example) ─────────────────────────
+config.yaml
+sqleasy.yaml
+
+# ── Build artifacts ───────────────────────────────────────
+*.deb
+sqleasy.deb
+
+# ── Test artifacts ────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ── OS junk ───────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor files ──────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ── Misc ──────────────────────────────────────────────────
+ctl.txt

@@ -1,0 +1,24 @@
+# SQL Easy - Project Config File
+# Copy this file to config.yaml and customise for your project.
+# CLI flags always override these values.
+# Run with: sqleasy start --config config.yaml
+#       or: place config.yaml in the scan working directory (auto-loaded).
+
+# ── Scan Tuning ────────────────────────────────────────────
+threads: 10
+level: 3
+risk: 2
+delay: 0
+
+# ── Proxy ──────────────────────────────────────────────────
+# proxy: http://127.0.0.1:8080
+# proxy: socks5://127.0.0.1:9050
+
+# ── SQLMap Tamper Scripts ──────────────────────────────────
+# Comma-separated. Leave unset to use auto-rotation.
+# tamper: space2comment,between,randomcase
+
+# ── Output ─────────────────────────────────────────────────
+# html: true
+# dump: false
+# tables: false

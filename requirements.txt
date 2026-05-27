@@ -1,0 +1,21 @@
+# SQL Easy - Python Requirements
+# ================================
+# Version: 1.1.0
+#
+# SQL Easy is built entirely on the Python Standard Library.
+# No pip packages are required to run the tool.
+#
+# Standard Library modules used internally:
+#   os, sys, subprocess, re, shutil, csv, json, time,
+#   threading, datetime, argparse, pathlib
+#
+# External binary tools (installed separately via sqleasy install):
+#   subfinder   - subdomain enumeration
+#   httpx       - live host probing
+#   katana      - URL crawling
+#   sqlmap      - SQL injection testing
+#   nuclei      - broad vulnerability scanning (optional)
+#   arjun       - hidden parameter discovery (optional)
+#   gau         - historical URL harvest (optional)
+#
+# Python version requirement: Python 3.8 or higher
